@@ -1,0 +1,41 @@
+# Virtual Environment
+/venv
+
+# Byte-compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Database
+.db
+
+# Local configuration
+instance/
+
+# IDE files
+.idea/
+
+# Compiled Python files
+*.pyc
+
+# Dependency directories
+env/
+lib/
+lib64/
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+*.egg
+
+# Python installer logs
+pip-log.txt
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# System files
+.DS_Store
+Thumbs.db
