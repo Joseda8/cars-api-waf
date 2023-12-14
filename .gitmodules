@@ -1,0 +1,4 @@
+[submodule "api-service"]
+	path = api-service
+	url = https://github.com/Joseda8/NodeJS-Swagger-exploration.git
+	branch = master
