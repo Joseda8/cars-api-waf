@@ -56,6 +56,7 @@ def proxy(path: str) -> Tuple[str, int, dict]:
         headers=request.headers,
         data=request.get_data(),
         cookies=request.cookies,
+        params=request.args,
         allow_redirects=False,
     )
 

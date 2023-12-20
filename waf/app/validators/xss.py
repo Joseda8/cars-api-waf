@@ -14,6 +14,7 @@ class XssValidator(BaseValidator):
         headers = self.headers
         data = self.data
         cookies = self.cookies
+        query_params = self.query_params
 
         # Flag to indicate if the request is safe
         green_flag = True

@@ -12,6 +12,7 @@ class BaseValidator:
         self.request_obj = request_obj
         self.method = request_obj.method
         self.headers = request_obj.headers
+        self.query_params = request.args.to_dict()
         self.data = request_obj.get_data()
         self.cookies = request_obj.cookies
 
