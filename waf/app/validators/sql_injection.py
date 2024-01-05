@@ -60,9 +60,10 @@ class SqlInjectionValidator(BaseValidator):
                         break
 
         # add to black list
-        with open(main_bp.root_path+"/black_list_files/list.csv", 'a') as file:
-            new_record = str(request.remote_addr) + ", "+ "sql injection" + ", "+ str(datetime.now())
-            file.write(new_record + '\n')
+        if green_flag == False:
+            with open(main_bp.root_path+"/black_list_files/list.csv", 'a') as file:
+                new_record = str(request.remote_addr) + ", "+ "sql injection" + ", "+ str(datetime.now())
+                file.write(new_record + '\n')
 
         return green_flag
 
