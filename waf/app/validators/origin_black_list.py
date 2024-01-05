@@ -1,5 +1,10 @@
 from app.validators.base import BaseValidator
 
+import csv
+import pandas as pd
+from flask import request
+from flask import Blueprint
+main_bp = Blueprint("main", __name__)
 
 class OriginBlackListValidator(BaseValidator):
     def validate(self) -> bool:
@@ -20,5 +25,9 @@ class OriginBlackListValidator(BaseValidator):
         green_flag = True
 
         # TODO: Make your magic here
+        df = pd.read_csv(main_bp.root_path+"/black_list_files/list.csv")
+        
+        if request.remote_addr in (df['ip']).tolist():
+            green_flag = False
 
         return green_flag
