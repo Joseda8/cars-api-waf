@@ -15,18 +15,14 @@ import joblib
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
 
-import nltk
-nltk.download('stopwords')
-from nltk.corpus import stopwords
-
 df_raw_text = pd.read_csv(main_bp.root_path+"/ml_files/sql_dataset.csv")
 
 # init vectorizer for tranfomation
-vectorizer = CountVectorizer(min_df=2, max_df=0.7, stop_words=stopwords.words('english'))
+vectorizer = CountVectorizer(min_df=2, max_df=0.7)
 # transform text to numbers (vectorizing)
 vectorizer.fit_transform(df_raw_text['Query'].values.astype('U')).toarray()
 # load saved model
-loaded_model = joblib.load(main_bp.root_path+"/ml_files/trained_model_with_94_percent_accuracy.sav")
+loaded_model = joblib.load(main_bp.root_path+"/ml_files/trained_model_with_99_percent_accuracy.sav")
 
 class SqlInjectionValidator(BaseValidator):
     def validate(self) -> bool:
