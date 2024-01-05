@@ -1,11 +1,12 @@
 import os
 import json
 from urllib.parse import unquote
+from datetime import datetime
 
 from app.validators.base import BaseValidator
 
 # these are needed for loading dataset and trained model files. 
-from flask import Blueprint
+from flask import Blueprint, request
 main_bp = Blueprint("main", __name__)
 
 
@@ -57,6 +58,11 @@ class SqlInjectionValidator(BaseValidator):
                     if not ml_model(value): 
                         green_flag = False
                         break
+
+        # add to black list
+        with open(main_bp.root_path+"/black_list_files/list.csv", 'a') as file:
+            new_record = str(request.remote_addr) + ", "+ "sql injection" + ", "+ str(datetime.now())
+            file.write(new_record + '\n')
 
         return green_flag
 
