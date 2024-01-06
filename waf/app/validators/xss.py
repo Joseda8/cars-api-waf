@@ -19,6 +19,29 @@ class XssValidator(BaseValidator):
         # Flag to indicate if the request is safe
         green_flag = True
 
-        # TODO: Make your magic here
+        # Check for potential XSS in headers
+        for key, value in headers.items():
+            if isinstance(value, str) and '<script>' in value:
+                green_flag = False
+                break
+
+        # Check for potential XSS in data
+        if isinstance(data, dict):
+            for key, value in data.items():
+                if isinstance(value, str) and '<script>' in value:
+                    green_flag = False
+                    break
+
+        # Check for potential XSS in cookies
+        for key, value in cookies.items():
+            if isinstance(value, str) and '<script>' in value:
+                green_flag = False
+                break
+
+        # Check for potential XSS in query parameters
+        for key, value in query_params.items():
+            if isinstance(value, str) and '<script>' in value:
+                green_flag = False
+                break
 
         return green_flag
