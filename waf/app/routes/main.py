@@ -17,6 +17,13 @@ SERVICE_API_URL = "http://localhost:5000"
 main_bp = Blueprint("main", __name__)
 
 
+@main_bp.route("/login", methods=["POST"])
+def login():
+    print(request.get_data())
+    response_code: int = 200
+    return jsonify({"message": "Successful login"}), response_code
+
+
 @main_bp.route("/<path:path>", methods=["GET", "POST", "PUT", "DELETE"])
 def proxy(path: str) -> Tuple[str, int, dict]:
     """
@@ -30,6 +37,10 @@ def proxy(path: str) -> Tuple[str, int, dict]:
     Returns:
     Tuple[str, int, dict]: A tuple containing the service response text, status code, and content type.
     """
+    # Check if the path is "/login"
+    if path == "login":
+        return jsonify({"error": "Access to /login via proxy is not allowed"}), 403
+
     # Perform WAF security checks here if needed
 
     # Instantiate validators
