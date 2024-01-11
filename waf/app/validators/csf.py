@@ -20,20 +20,19 @@ class CsfValidator(BaseValidator):
         green_flag = True
 
         # TODO: Make your magic here
-        
         sessionId = cookies.get("session_id")
         crfToken = cookies.get("csrf_token")
         print(sessionId)
         print(crfToken)
         session['username'] = "test"
         print(session['username'])
-        print(session['test'])
+        print("Session test: ", session['test'])
         # Check if the session exists
         if sessionId in session:
             print(sessionId)
             userSession = session[sessionId]
             # Validate CSRF token
-            if(userSession.csrfToken != crfToken):
+            if(userSession["csrf_token"] != crfToken):
                 green_flag = False
         else:
             green_flag = False
