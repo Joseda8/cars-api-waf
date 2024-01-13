@@ -42,6 +42,13 @@ class SqlInjectionValidator(BaseValidator):
 
         green_flag = True
 
+        # Fix possible empty data
+        data = "[{}]" if data == b'' else data
+        try:
+            data = json.loads(data)
+        except:
+            data = json.loads("[{}]")
+
         if method in ("GET", "DELETE"):
             for string_to_check in unquote(url).split('/'):
                 if not ml_model(string_to_check): 
@@ -49,7 +56,7 @@ class SqlInjectionValidator(BaseValidator):
                     break
 
         elif method in ("POST", "PUT"):
-            for key, value in (json.loads(data)[0]).items():
+            for key, value in (data[0]).items():
                 if type(value) == str:
                     if not ml_model(value): 
                         green_flag = False
