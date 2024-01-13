@@ -3,6 +3,10 @@ from flask import Flask
 
 app: Flask = create_app()
 app.secret_key = 'your_long_random_secret_key'
+
+# Set session lifetime to 60 minutes 
+app.config['PERMANENT_SESSION_LIFETIME'] = 3600
+
 if __name__ == "__main__":
     """
     Main entry point for the Flask application.
