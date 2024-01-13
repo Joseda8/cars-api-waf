@@ -18,18 +18,20 @@ class CsfValidator(BaseValidator):
 
         # Flag to indicate if the request is safe
         green_flag = True
-
-        # TODO: Make your magic here
+        
+        # Checking the Origin/Referer of request to see if it is the expected one
+        expected_origin = 'expected_origin'
+        origin = request.headers.get('Origin') or request.headers.get('Referer')
+        if(expected_origin != origin):
+            print("origin: ",origin)
+            green_flag = False
+        
+        # Get the session id from the cookie
         sessionId = cookies.get("session_id")
+        # Get the CSRF token from the cookie
         crfToken = cookies.get("csrf_token")
-        print(sessionId)
-        print(crfToken)
-        session['username'] = "test"
-        print(session['username'])
-        print("Session test: ", session['test'])
         # Check if the session exists
         if sessionId in session:
-            print(sessionId)
             userSession = session[sessionId]
             # Validate CSRF token
             if(userSession["csrf_token"] != crfToken):

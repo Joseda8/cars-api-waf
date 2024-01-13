@@ -31,11 +31,11 @@ def login():
         # Generate session ID and CSRF token
         session_id = generate_csrf_token()
         csrf_token = generate_csrf_token()
+        # Store csrf token in user session
         session[session_id] = {"user": {"username": username, "password": password}, "csrf_token": csrf_token}
-        session["test"] = "Jose Montoya"
         response = make_response(jsonify({"message": "Successful login"}))
-        response.set_cookie("session_id", session_id, httponly=True)
-        response.set_cookie("csrf_token", csrf_token, httponly=True)
+        response.set_cookie("session_id", session_id, httponly=True, samesite='Strict', secure=True)
+        response.set_cookie("csrf_token", csrf_token, httponly=True, samesite='Strict', secure=True)
         response.status_code = 200
         return response
     else:
