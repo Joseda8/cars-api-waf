@@ -1,5 +1,5 @@
-import requests
-from flask import Blueprint, jsonify, request, Response
+import requests, secrets
+from flask import Blueprint, jsonify, request, Response,make_response, session
 from typing import Tuple
 
 from app.validators import (
@@ -17,12 +17,31 @@ SERVICE_API_URL = "http://localhost:5000"
 main_bp = Blueprint("main", __name__)
 
 
+def generate_csrf_token():
+    token = secrets.token_hex(16)
+    return token
+
+
 @main_bp.route("/login", methods=["POST"])
 def login():
-    print(request.get_data())
-    response_code: int = 200
-    return jsonify({"message": "Successful login"}), response_code
-
+    data = request.get_json()
+    username = data.get("username")
+    password = data.get("password")
+    if username == "username" and password == "password":
+        # Generate session ID and CSRF token
+        session_id = generate_csrf_token()
+        csrf_token = generate_csrf_token()
+        # Store csrf token in user session
+        session[session_id] = {"user": {"username": username, "password": password}, "csrf_token": csrf_token}
+        response = make_response(jsonify({"message": "Successful login"}))
+        response.set_cookie("session_id", session_id, httponly=True, samesite='Strict', secure=True)
+        response.set_cookie("csrf_token", csrf_token, httponly=True, samesite='Strict', secure=True)
+        response.status_code = 200
+        return response
+    else:
+        response_code: int = 401
+        return jsonify({"message": "invalid credentials"}), response_code
+        
 
 @main_bp.route("/<path:path>", methods=["GET", "POST", "PUT", "DELETE"])
 def proxy(path: str) -> Tuple[str, int, dict]:
@@ -48,7 +67,7 @@ def proxy(path: str) -> Tuple[str, int, dict]:
         CsfValidator(request_obj=request),
         FileInclusionValidator(request_obj=request),
         OriginBlackListValidator(request_obj=request),
-        SqlInjectionValidator(request_obj=request),
+        # SqlInjectionValidator(request_obj=request),
         XssValidator(request_obj=request),
     ]
 
