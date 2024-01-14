@@ -1,7 +1,9 @@
-import requests, secrets
-from flask import Blueprint, jsonify, request, Response,make_response, session
 from typing import Tuple
+import requests
 
+from flask import Blueprint, jsonify, make_response, request, Response, session
+
+from app.util import generate_csrf_token
 from app.validators import (
     CsfValidator,
     FileInclusionValidator,
@@ -10,6 +12,7 @@ from app.validators import (
     XssValidator,
 )
 
+
 # URL of the service API
 SERVICE_API_URL = "http://localhost:5000"
 
@@ -17,31 +20,35 @@ SERVICE_API_URL = "http://localhost:5000"
 main_bp = Blueprint("main", __name__)
 
 
-def generate_csrf_token():
-    token = secrets.token_hex(16)
-    return token
-
-
 @main_bp.route("/login", methods=["POST"])
 def login():
+    """
+    Handle user login.
+
+    Returns:
+    Flask Response: A response object indicating the result of the login attempt.
+    """
+    # Extract user data
     data = request.get_json()
-    username = data.get("username")
-    password = data.get("password")
+    username, password = data.get("username"), data.get("password")
+
     if username == "username" and password == "password":
         # Generate session ID and CSRF token
-        session_id = generate_csrf_token()
-        csrf_token = generate_csrf_token()
+        session_id, csrf_token = generate_csrf_token(), generate_csrf_token()
         # Store csrf token in user session
-        session[session_id] = {"user": {"username": username, "password": password}, "csrf_token": csrf_token}
-        response = make_response(jsonify({"message": "Successful login"}))
+        session[session_id] = {
+            "user": {"username": username, "password": password},
+            "csrf_token": csrf_token,
+        }
+        # Return success response
+        response = make_response(jsonify({"message": "Successful login"}), 200)
         response.set_cookie("session_id", session_id, httponly=True, samesite='Strict', secure=True)
         response.set_cookie("csrf_token", csrf_token, httponly=True, samesite='Strict', secure=True)
-        response.status_code = 200
         return response
     else:
-        response_code: int = 401
-        return jsonify({"message": "invalid credentials"}), response_code
-        
+        # Return invalid credentials response
+        return jsonify({"message": "invalid credentials"}), 401
+
 
 @main_bp.route("/<path:path>", methods=["GET", "POST", "PUT", "DELETE"])
 def proxy(path: str) -> Tuple[str, int, dict]:
@@ -67,7 +74,7 @@ def proxy(path: str) -> Tuple[str, int, dict]:
         CsfValidator(request_obj=request),
         FileInclusionValidator(request_obj=request),
         OriginBlackListValidator(request_obj=request),
-        # SqlInjectionValidator(request_obj=request),
+        SqlInjectionValidator(request_obj=request),
         XssValidator(request_obj=request),
     ]
 
@@ -75,7 +82,7 @@ def proxy(path: str) -> Tuple[str, int, dict]:
     for validator in validators:
         if not validator.validate():
             # If any validator fails, return an appropriate HTTP error response
-            error_message = f"Security validation failed: {validator.__class__.__name__}"
+            error_message = (f"Security validation failed: {validator.__class__.__name__}")
             return jsonify({"error": error_message}), 403
 
     # Forward the request to the service
