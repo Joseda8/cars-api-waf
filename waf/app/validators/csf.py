@@ -20,10 +20,9 @@ class CsfValidator(BaseValidator):
         green_flag = True
         
         # Checking the Origin/Referer of request to see if it is the expected one
-        expected_origin = 'expected_origin'
-        origin = request.headers.get('Origin') or request.headers.get('Referer')
+        expected_origin = "expected_origin"
+        origin = request.headers.get("Origin") or request.headers.get("Referer")
         if(expected_origin != origin):
-            print("origin: ",origin)
             green_flag = False
         
         # Get the session id from the cookie
