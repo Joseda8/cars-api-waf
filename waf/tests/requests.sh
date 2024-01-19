@@ -66,11 +66,11 @@ CSRF_TOKEN=$(echo "$login_response" | grep -oP 'csrf_token=\K[^;]+')
 SESSION=$(echo "$login_response" | grep -oP 'session=\K[^;]+')
 
 # Get all data with cookies
-run_command "curl -i -X GET -H \"Cookie: csrf_token=$CSRF_TOKEN; session=$SESSION; session_id=$SESSION_ID\" http://localhost:8000/data/all"
+run_command "curl -i -X GET -H \"crfToken: $CSRF_TOKEN\" -H \"Cookie: session=$SESSION; session_id=$SESSION_ID\" http://localhost:8000/data/all"
 
 # Create CSRF Headers variable
-CSRF_HEADERS="\"Origin: expected_origin\" -H \"Cookie: csrf_token=$CSRF_TOKEN; session=$SESSION; session_id=$SESSION_ID\""
-CSRF_HEADERS_XSS="\"Origin: expected_origin\" -H \"Cookie: my_cookie=<script>alert(\"XSSAttack\")</script>; csrf_token=$CSRF_TOKEN; session=$SESSION; session_id=$SESSION_ID\""
+CSRF_HEADERS="\"Origin: expected_origin\" -H \"crfToken: $CSRF_TOKEN\" -H \"Cookie: session=$SESSION; session_id=$SESSION_ID\""
+CSRF_HEADERS_XSS="\"Origin: expected_origin\" -H \"crfToken: $CSRF_TOKEN\" -H \"Cookie: my_cookie=<script>alert(\"XSSAttack\")</script>; session=$SESSION; session_id=$SESSION_ID\""
 
 # Get all data with origin header and insert new information
 run_command "curl -i -X GET -H $CSRF_HEADERS http://localhost:8000/data/all"

@@ -27,8 +27,9 @@ class CsfValidator(BaseValidator):
         
         # Get the session id from the cookie
         sessionId = cookies.get("session_id")
-        # Get the CSRF token from the cookie
-        crfToken = cookies.get("csrf_token")
+        # Get the CSRF token from the header
+        crfToken = request.headers.get("crfToken")
+        print("Token: ", request.headers)
         # Check if the session exists
         if sessionId in session:
             userSession = session[sessionId]
